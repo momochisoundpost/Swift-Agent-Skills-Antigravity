@@ -187,6 +187,7 @@ describe("install.ps1 static checks", () => {
     assert.doesNotMatch(text, /-AsHashtable\b/i);
     assert.doesNotMatch(text, /-Parallel\b/i);
     assert.doesNotMatch(text, /\$IsWindows\b/i);
+    assert.doesNotMatch(text, /Join-Path[^\r\n]*'[^']*\\[^']*'/);
     assert.match(text, /SecurityProtocolType\]::Tls12/);
     assert.match(text, /\$PackTable\b/);
 
@@ -553,5 +554,24 @@ describe("install.ps1 runtime", { skip: !PS_SHELL && !MUST_NOT_SKIP }, () => {
     assert.equal(res.status, 0, `${res.stdout}\n${res.stderr}`);
     assert.match(res.stdout, /CALLER_ALIVE/);
     assert.deepEqual(listDirNames(dest), ["swift-core", "swift-ui-craft"]);
+  });
+
+  test("usage error under [scriptblock]::Create throws without terminating caller session", () => {
+    const script = [
+      "$sb = [scriptblock]::Create([System.IO.File]::ReadAllText($env:TARGET_PS1, [System.Text.Encoding]::UTF8))",
+      "$caught = $null",
+      "try { & $sb -Packs bogus } catch { $caught = $_.Exception.Message }",
+      "Write-Host \"CAUGHT:$caught\"",
+      "Write-Host 'CALLER_ALIVE'",
+    ].join("; ");
+
+    const res = spawnSync(PS_SHELL, ["-NoProfile", "-Command", script], {
+      encoding: "utf8",
+      env: { ...process.env, TARGET_PS1: INSTALL_PS1 },
+    });
+    assert.equal(res.status, 0, `${res.stdout}\n${res.stderr}`);
+    assert.match(res.stdout, /CAUGHT:Unknown pack 'bogus'/);
+    assert.match(res.stdout, /Valid packs:/);
+    assert.match(res.stdout, /CALLER_ALIVE/);
   });
 });

@@ -41,8 +41,11 @@ $PackTable = @(
 
 function Exit-WithUsageError {
   param([string]$Message)
-  [Console]::Error.WriteLine($Message)
-  exit 2
+  if (-not [string]::IsNullOrEmpty($PSCommandPath)) {
+    [Console]::Error.WriteLine($Message)
+    exit 2
+  }
+  throw $Message
 }
 
 function Resolve-FullLocalPath {
@@ -79,7 +82,7 @@ function Resolve-DestinationRoot {
   }
 
   if ($UseWorkspace) {
-    $wsPath = Join-Path (Get-Location).ProviderPath '.agents\plugins'
+    $wsPath = Join-Path (Join-Path (Get-Location).ProviderPath '.agents') 'plugins'
     return Resolve-FullLocalPath -RawPath $wsPath
   }
 
@@ -87,7 +90,7 @@ function Resolve-DestinationRoot {
     throw 'USERPROFILE environment variable is not set. Specify -Destination or -Workspace.'
   }
 
-  $globalPath = Join-Path $env:USERPROFILE '.gemini\config\plugins'
+  $globalPath = Join-Path (Join-Path (Join-Path $env:USERPROFILE '.gemini') 'config') 'plugins'
   return Resolve-FullLocalPath -RawPath $globalPath
 }
 
