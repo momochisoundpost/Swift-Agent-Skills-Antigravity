@@ -94,7 +94,8 @@ describe("zip", () => {
   });
 
   test("zip extracts with platform tool", (t) => {
-    const dir = trackTemp(makeTempDir("zip-tool-"));
+    // Expand Windows 8.3 short temp names (e.g., RUNNER~1) so PS 5.1 Expand-Archive zip-slip check matches.
+    const dir = trackTemp(fs.realpathSync.native(makeTempDir("zip-tool-")));
     const zipPath = path.join(dir, "archive.zip");
     const outDir = path.join(dir, "extracted");
     const entries = [
@@ -104,7 +105,7 @@ describe("zip", () => {
     fs.writeFileSync(zipPath, createZip(entries));
 
     if (process.platform === "win32") {
-      const psCmd = `Expand-Archive -LiteralPath '${zipPath.replace(/'/g, "''")}' -DestinationPath '${outDir.replace(/'/g, "''")}' -Force`;
+      const psCmd = `$ErrorActionPreference = 'Stop'; Expand-Archive -LiteralPath '${zipPath.replace(/'/g, "''")}' -DestinationPath '${outDir.replace(/'/g, "''")}' -Force`;
       const res = spawnSync("powershell", ["-NoProfile", "-Command", psCmd], {
         encoding: "utf8",
       });

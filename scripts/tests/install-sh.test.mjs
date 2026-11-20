@@ -12,6 +12,9 @@ const REPO_ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..
 const INSTALL_SH = path.join(REPO_ROOT, "install.sh");
 
 function findPosixTools() {
+  if (process.platform === "win32") {
+    return false;
+  }
   const probe = spawnSync(
     "sh",
     [
