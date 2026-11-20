@@ -2,7 +2,9 @@
 
 All notable changes to the Google Antigravity community port are recorded here.
 
-## [1.0.0] - Unreleased
+## [Unreleased]
+
+## [1.0.0] - 2026-11-20
 
 ### Added
 - Declarative upstream catalog (`antigravity/sources.json`) pinning **30 MIT-licensed Swift & Apple skill repositories** from [`twostraws/Swift-Agent-Skills`](https://github.com/twostraws/Swift-Agent-Skills) by 40-character commit SHA.
