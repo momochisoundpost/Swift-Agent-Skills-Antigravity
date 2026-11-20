@@ -1,0 +1,58 @@
+name: Antigravity Release
+
+on:
+  push:
+    tags:
+      - "v*"
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    name: Build and Publish Release
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+
+      - name: Set up Node.js 22
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: 22
+
+      - name: Cache upstream git repositories
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: .cache/upstreams
+          key: ${{ runner.os }}-upstreams-${{ hashFiles('antigravity/sources.json') }}
+          restore-keys: |
+            ${{ runner.os }}-upstreams-
+
+      - name: Verify generated plugins match pinned sources
+        run: node scripts/antigravity/build.mjs --check
+
+      - name: Validate plugins strictly
+        run: node scripts/antigravity/validate.mjs --strict
+
+      - name: Run automated test suite
+        run: node --test "scripts/tests/*.test.mjs"
+
+      - name: Package release ZIP
+        run: node scripts/antigravity/package-release.mjs --out swift-agent-skills-antigravity.zip
+
+      - name: Verify executable mode bits in release ZIP
+        run: |
+          listing="$(unzip -Z swift-agent-skills-antigravity.zip)"
+          grep -q '^-rwxr-xr-x.*swift-ios-simulator/' <<< "$listing"
+          grep -q '^-rwxr-xr-x.*swift-app-store/skills/app-store-changelog/scripts/collect_release_changes\.sh$' <<< "$listing"
+          while IFS= read -r exe; do
+            [ -n "$exe" ] || continue
+            grep -q "^-rwxr-xr-x.* ${exe//./\\.}\$" <<< "$listing"
+          done < antigravity/plugins/EXECUTABLES.txt
+
+      - name: Create GitHub Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh release create "$GITHUB_REF_NAME" swift-agent-skills-antigravity.zip --generate-notes --title "$GITHUB_REF_NAME"
