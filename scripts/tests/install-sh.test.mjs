@@ -98,6 +98,41 @@ function makeSpacedFixtureZip(root, options = {}) {
   return makeEightPackFixtureZip(zipDir, options);
 }
 
+function writeCustomEightPackZip(zipPath, manifestForPack) {
+  fs.mkdirSync(path.dirname(zipPath), { recursive: true });
+  const entries = [];
+  for (const pack of EIGHT_PACK_NAMES) {
+    const rawManifest = manifestForPack(pack);
+    const manifestBuf = Buffer.isBuffer(rawManifest)
+      ? rawManifest
+      : Buffer.from(
+          `${JSON.stringify(
+            {
+              $schema: ANTIGRAVITY_SCHEMA_URL,
+              name: pack,
+              displayName: `${pack} Tools`,
+              description: `Fixture for ${pack}.`,
+              version: "1.0.0",
+              logo: "assets/logo.svg",
+              suggestedPrompts: ["One", "Two", "Three"],
+              author: { name: "Test Author", url: "https://example.com" },
+              ...rawManifest,
+            },
+            null,
+            2,
+          )}\n`,
+          "utf8",
+        );
+    entries.push({ name: `${pack}/plugin.json`, data: manifestBuf, mode: 0o644 });
+    entries.push({
+      name: `${pack}/skills/${pack}-skill/SKILL.md`,
+      data: Buffer.from(`---\nname: ${pack}-skill\ndescription: Skill.\n---\nBody\n`, "utf8"),
+      mode: 0o644,
+    });
+  }
+  fs.writeFileSync(zipPath, createZip(entries));
+}
+
 describe("install.sh static checks", () => {
   test("script uses LF, POSIX sh shebang, set -eu, no bashisms, and never mentions config.json", () => {
     assert.ok(fs.existsSync(INSTALL_SH), `Missing ${INSTALL_SH}`);
@@ -697,5 +732,49 @@ describe("install.sh runtime", { skip: !HAS_POSIX_TOOLS && !MUST_NOT_SKIP }, () 
       "https://github.com/momochisoundpost/Swift-Agent-Skills-Antigravity/releases/latest/download/swift-agent-skills-antigravity.zip",
       "https://github.com/momochisoundpost/Swift-Agent-Skills-Antigravity/archive/refs/heads/main.zip",
     ]);
+  });
+
+  test("two-phase staging: malformed pack #2 under --all-disabled leaves pre-existing swift-core untouched", () => {
+    const root = trackTemp(makeTempDir("sh-two-phase-"));
+    const validZip = makeSpacedFixtureZip(root, { zipName: "valid.zip" });
+    const dest = path.join(root, "dest with space");
+
+    const init = runInstaller(["--from-zip", validZip, "--dest", dest]);
+    assert.equal(init.status, 0, init.stderr);
+
+    const coreManifestPath = path.join(dest, "swift-core", "plugin.json");
+    const sentinelManifest = Buffer.from('{"name":"swift-core","sentinel":true}\n', "utf8");
+    fs.writeFileSync(coreManifestPath, sentinelManifest);
+
+    const badZipPath = path.join(root, "zip with space", "bad-pack2.zip");
+    writeCustomEightPackZip(badZipPath, (pack) =>
+      pack === "swift-ui-craft" ? Buffer.from("not-valid-json\n", "utf8") : {},
+    );
+
+    const fail = runInstaller(["--from-zip", badZipPath, "--dest", dest, "--all-disabled"]);
+    assert.notEqual(fail.status, 0);
+    assert.deepEqual(fs.readFileSync(coreManifestPath), sentinelManifest);
+    assert.equal(fs.existsSync(path.join(dest, "swift-ui-craft")), false);
+    assert.equal(fs.existsSync(path.join(root, ".swift-agent-skills-staging")), false);
+  });
+
+  test("--all-disabled handles '=' in --dest path and description strings containing \"disabled\":", () => {
+    const root = trackTemp(makeTempDir("sh-awk-guards-"));
+    const zipPath = path.join(root, "zip with space", "anchor.zip");
+    const dest = path.join(root, "dest=with=eq");
+
+    writeCustomEightPackZip(zipPath, (pack) =>
+      pack === "swift-ui-craft"
+        ? { description: 'Mentions "disabled": true inside description text.' }
+        : {},
+    );
+
+    const res = runInstaller(["--from-zip", zipPath, "--dest", dest, "--all-disabled"]);
+    assert.equal(res.status, 0, `${res.stdout}\n${res.stderr}`);
+    assert.equal(readJsonStrict(path.join(dest, "swift-ui-craft", "plugin.json")).disabled, true);
+    assert.equal(
+      Object.hasOwn(readJsonStrict(path.join(dest, "swift-core", "plugin.json")), "disabled"),
+      false,
+    );
   });
 });

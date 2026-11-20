@@ -36,7 +36,7 @@ function readTextLf(relPath) {
 }
 
 function parsePs1PackTable(ps1Text) {
-  const match = ps1Text.match(/\$PackTable\s*=\s*@\(([\s\S]*?)\r?\n\)/);
+  const match = ps1Text.match(/\$PackTable\s*=\s*@\(([\s\S]*?)\r?\n[ \t]*\)/);
   assert.ok(match, "Could not locate $PackTable in install.ps1");
   const rows = [];
   for (const line of match[1].split(/\r?\n/)) {
@@ -221,6 +221,18 @@ describe("documentation consistency", () => {
     );
 
     assert.match(installDoc, /## Instructions for Antigravity/);
+    const agentHeadingIdx = installDoc.indexOf("## Instructions for Antigravity");
+    assert.notEqual(agentHeadingIdx, -1, "INSTALL.md missing ## Instructions for Antigravity");
+    const agentSection = installDoc.slice(agentHeadingIdx);
+    assert.match(agentSection, /sh -s --/);
+    assert.match(agentSection, /\[scriptblock\]::Create/);
+    for (const flag of ["--packs", "-Packs", "--all-disabled", "-AllDisabled", "--workspace", "-Workspace"]) {
+      assert.ok(
+        agentSection.includes(flag),
+        `INSTALL.md Instructions for Antigravity missing ${flag}`,
+      );
+    }
+
     assert.match(installDoc, /config\.json/);
     assert.match(installDoc, /never.*config\.json|do not.*config\.json/i);
     assert.match(installDoc, /install\.sh/);

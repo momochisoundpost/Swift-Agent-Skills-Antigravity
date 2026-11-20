@@ -1,7 +1,8 @@
 import { afterEach, describe, test } from "node:test";
 import assert from "node:assert/strict";
-import { spawnSync } from "node:child_process";
+import { spawn, spawnSync } from "node:child_process";
 import fs from "node:fs";
+import http from "node:http";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { ANTIGRAVITY_SCHEMA_URL } from "../antigravity/lib.mjs";
@@ -79,6 +80,41 @@ function readJsonStrict(filePath) {
 function makeSpacedFixtureZip(root, options = {}) {
   const zipDir = path.join(root, "zip with space");
   return makeEightPackFixtureZip(zipDir, options);
+}
+
+function writeCustomEightPackZip(zipPath, manifestForPack) {
+  fs.mkdirSync(path.dirname(zipPath), { recursive: true });
+  const entries = [];
+  for (const pack of EIGHT_PACK_NAMES) {
+    const rawManifest = manifestForPack(pack);
+    const manifestBuf = Buffer.isBuffer(rawManifest)
+      ? rawManifest
+      : Buffer.from(
+          `${JSON.stringify(
+            {
+              $schema: ANTIGRAVITY_SCHEMA_URL,
+              name: pack,
+              displayName: `${pack} Tools`,
+              description: `Fixture for ${pack}.`,
+              version: "1.0.0",
+              logo: "assets/logo.svg",
+              suggestedPrompts: ["One", "Two", "Three"],
+              author: { name: "Test Author", url: "https://example.com" },
+              ...rawManifest,
+            },
+            null,
+            2,
+          )}\n`,
+          "utf8",
+        );
+    entries.push({ name: `${pack}/plugin.json`, data: manifestBuf, mode: 0o644 });
+    entries.push({
+      name: `${pack}/skills/${pack}-skill/SKILL.md`,
+      data: Buffer.from(`---\nname: ${pack}-skill\ndescription: Skill.\n---\nBody\n`, "utf8"),
+      mode: 0o644,
+    });
+  }
+  fs.writeFileSync(zipPath, createZip(entries));
 }
 
 function assertBalancedPowerShellDelimiters(source) {
@@ -188,6 +224,9 @@ describe("install.ps1 static checks", () => {
     assert.doesNotMatch(text, /-Parallel\b/i);
     assert.doesNotMatch(text, /\$IsWindows\b/i);
     assert.doesNotMatch(text, /Join-Path[^\r\n]*'[^']*\\[^']*'/);
+    assert.doesNotMatch(text, /api\.github\.com/i);
+    assert.match(text, /releases\/latest\/download\//);
+    assert.match(text, /ProgressPreference\s*=\s*'SilentlyContinue'/);
     assert.match(text, /SecurityProtocolType\]::Tls12/);
     assert.match(text, /\$PackTable\b/);
 
@@ -573,5 +612,259 @@ describe("install.ps1 runtime", { skip: !PS_SHELL && !MUST_NOT_SKIP }, () => {
     assert.match(res.stdout, /CAUGHT:Unknown pack 'bogus'/);
     assert.match(res.stdout, /Valid packs:/);
     assert.match(res.stdout, /CALLER_ALIVE/);
+  });
+
+  test("Invoke-Expression (irm | iex style) preserves caller ErrorActionPreference and ProgressPreference", () => {
+    const root = trackTemp(makeTempDir("ps1-iex-"));
+    const zipPath = makeSpacedFixtureZip(root);
+    const fakeProfile = path.join(root, "user with space");
+    fs.mkdirSync(fakeProfile, { recursive: true });
+
+    const successScript = [
+      "$ErrorActionPreference = 'Continue'",
+      "$ProgressPreference = 'Continue'",
+      "$script:seenEap = $null",
+      "$script:seenPp = $null",
+      "$script:seenUri = $null",
+      "function Invoke-WebRequest { param([switch]$UseBasicParsing, $Headers, [string]$Uri, [string]$OutFile) $script:seenEap = $ErrorActionPreference; $script:seenPp = $ProgressPreference; $script:seenUri = $Uri; [System.IO.File]::Copy($env:TARGET_ZIP, $OutFile, $true) }",
+      "$code = [System.IO.File]::ReadAllText($env:TARGET_PS1, [System.Text.Encoding]::UTF8)",
+      "Invoke-Expression $code",
+      "Write-Host \"SEEN_EAP=$script:seenEap\"",
+      "Write-Host \"SEEN_PP=$script:seenPp\"",
+      "Write-Host \"SEEN_URI=$script:seenUri\"",
+      "Write-Host \"AFTER_EAP=$ErrorActionPreference\"",
+      "Write-Host \"AFTER_PP=$ProgressPreference\"",
+      "Write-Host \"LEAK_FN=$(Test-Path function:Show-PackTable)\"",
+    ].join("; ");
+
+    const okRes = spawnSync(PS_SHELL, ["-NoProfile", "-Command", successScript], {
+      encoding: "utf8",
+      env: {
+        ...process.env,
+        USERPROFILE: fakeProfile,
+        HOME: fakeProfile,
+        TARGET_PS1: INSTALL_PS1,
+        TARGET_ZIP: zipPath,
+      },
+    });
+    assert.equal(okRes.status, 0, `${okRes.stdout}\n${okRes.stderr}`);
+    assert.match(okRes.stdout, /SEEN_EAP=Stop/);
+    assert.match(okRes.stdout, /SEEN_PP=SilentlyContinue/);
+    assert.match(
+      okRes.stdout,
+      /SEEN_URI=https:\/\/github\.com\/momochisoundpost\/Swift-Agent-Skills-Antigravity\/releases\/latest\/download\/swift-agent-skills-antigravity\.zip/,
+    );
+    assert.match(okRes.stdout, /AFTER_EAP=Continue/);
+    assert.match(okRes.stdout, /AFTER_PP=Continue/);
+    assert.match(okRes.stdout, /LEAK_FN=False/);
+    const expectedDest = path.join(fakeProfile, ".gemini", "config", "plugins");
+    assert.deepEqual(listDirNames(expectedDest), ["swift-core"]);
+
+    const failScript = [
+      "$ErrorActionPreference = 'Continue'",
+      "$ProgressPreference = 'Continue'",
+      "function Invoke-WebRequest { param([switch]$UseBasicParsing, $Headers, [string]$Uri, [string]$OutFile) throw 'simulated network error' }",
+      "$code = [System.IO.File]::ReadAllText($env:TARGET_PS1, [System.Text.Encoding]::UTF8)",
+      "try { Invoke-Expression $code } catch { Write-Host \"CAUGHT_ERR=$($_.Exception.Message)\" }",
+      "Write-Host \"AFTER_FAIL_EAP=$ErrorActionPreference\"",
+      "Write-Host \"AFTER_FAIL_PP=$ProgressPreference\"",
+    ].join("; ");
+
+    const failRes = spawnSync(PS_SHELL, ["-NoProfile", "-Command", failScript], {
+      encoding: "utf8",
+      env: {
+        ...process.env,
+        USERPROFILE: fakeProfile,
+        HOME: fakeProfile,
+        TARGET_PS1: INSTALL_PS1,
+      },
+    });
+    assert.equal(failRes.status, 0, `${failRes.stdout}\n${failRes.stderr}`);
+    assert.match(failRes.stdout, /CAUGHT_ERR=simulated network error/);
+    assert.match(failRes.stdout, /AFTER_FAIL_EAP=Continue/);
+    assert.match(failRes.stdout, /AFTER_FAIL_PP=Continue/);
+  });
+
+  test("two-phase staging: malformed pack #2 under -AllDisabled leaves pre-existing swift-core untouched", () => {
+    const root = trackTemp(makeTempDir("ps1-two-phase-"));
+    const validZip = makeSpacedFixtureZip(root, { zipName: "valid.zip" });
+    const dest = path.join(root, "dest with space");
+
+    const init = runInstaller(["-FromZip", validZip, "-Destination", dest]);
+    assert.equal(init.status, 0, init.stderr);
+
+    const coreManifestPath = path.join(dest, "swift-core", "plugin.json");
+    const sentinelManifest = Buffer.from('{"name":"swift-core","sentinel":true}\n', "utf8");
+    fs.writeFileSync(coreManifestPath, sentinelManifest);
+
+    const badZipPath = path.join(root, "zip with space", "bad-pack2.zip");
+    writeCustomEightPackZip(badZipPath, (pack) =>
+      pack === "swift-ui-craft" ? Buffer.from("not-valid-json\n", "utf8") : {},
+    );
+
+    const fail = runInstaller(["-FromZip", badZipPath, "-Destination", dest, "-AllDisabled"]);
+    assert.notEqual(fail.status, 0);
+    assert.deepEqual(fs.readFileSync(coreManifestPath), sentinelManifest);
+    assert.equal(fs.existsSync(path.join(dest, "swift-ui-craft")), false);
+    assert.equal(fs.existsSync(path.join(root, ".swift-agent-skills-staging")), false);
+  });
+
+  test("-AllDisabled still injects disabled when description string mentions \"disabled\":", () => {
+    const root = trackTemp(makeTempDir("ps1-disabled-anchor-"));
+    const zipPath = path.join(root, "zip with space", "anchor.zip");
+    const dest = path.join(root, "dest with space");
+
+    writeCustomEightPackZip(zipPath, (pack) =>
+      pack === "swift-ui-craft"
+        ? { description: 'Mentions "disabled": true inside description text.' }
+        : {},
+    );
+
+    const res = runInstaller(["-FromZip", zipPath, "-Destination", dest, "-AllDisabled"]);
+    assert.equal(res.status, 0, `${res.stdout}\n${res.stderr}`);
+    assert.equal(readJsonStrict(path.join(dest, "swift-ui-craft", "plugin.json")).disabled, true);
+    assert.equal(
+      Object.hasOwn(readJsonStrict(path.join(dest, "swift-core", "plugin.json")), "disabled"),
+      false,
+    );
+  });
+
+  test("default download falls back to main.zip only on HTTP 404; non-404 and -Version fail closed", async () => {
+    const root = trackTemp(makeTempDir("ps1-http-"));
+    const dest = path.join(root, "dest with space");
+    const branchZipPath = path.join(root, "main-branch.zip");
+
+    const coreManifest = `${JSON.stringify(
+      {
+        $schema: ANTIGRAVITY_SCHEMA_URL,
+        name: "swift-core",
+        displayName: "Swift Core",
+        description: "Fallback archive fixture.",
+        version: "1.0.0",
+        logo: "assets/logo.svg",
+        suggestedPrompts: ["One", "Two", "Three"],
+        author: { name: "Test Author", url: "https://example.com" },
+      },
+      null,
+      2,
+    )}\n`;
+    const branchZipBuf = createZip([
+      {
+        name: "Swift-Agent-Skills-Antigravity-main/antigravity/plugins/swift-core/plugin.json",
+        data: Buffer.from(coreManifest, "utf8"),
+        mode: 0o644,
+      },
+      {
+        name: "Swift-Agent-Skills-Antigravity-main/antigravity/plugins/swift-core/assets/logo.svg",
+        data: Buffer.from('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128"></svg>\n'),
+        mode: 0o644,
+      },
+      {
+        name: "Swift-Agent-Skills-Antigravity-main/antigravity/plugins/swift-core/skills/s1/SKILL.md",
+        data: Buffer.from("---\nname: s1\ndescription: Skill one.\n---\nBody\n"),
+        mode: 0o644,
+      },
+    ]);
+    fs.writeFileSync(branchZipPath, branchZipBuf);
+
+    let mode = "404-fallback";
+    const requestedPaths = [];
+    const server = http.createServer((req, res) => {
+      requestedPaths.push(req.url);
+      if (mode === "404-fallback") {
+        if (req.url === "/momochisoundpost/Swift-Agent-Skills-Antigravity/archive/refs/heads/main.zip") {
+          res.writeHead(200, { "Content-Type": "application/zip" });
+          res.end(branchZipBuf);
+          return;
+        }
+        res.writeHead(404);
+        res.end("Not Found");
+        return;
+      }
+      if (mode === "500-fail") {
+        res.writeHead(500);
+        res.end("Server Error");
+        return;
+      }
+      res.writeHead(404);
+      res.end("Not Found");
+    });
+
+    await new Promise((resolve) => server.listen(0, "127.0.0.1", resolve));
+    const { port } = server.address();
+    const baseUrl = `http://127.0.0.1:${port}`;
+
+    function runHttpCase(extraArgs) {
+      return new Promise((resolve, reject) => {
+        const script = [
+          "function Invoke-WebRequest { param([switch]$UseBasicParsing, $Headers, [string]$Uri, [string]$OutFile) $mapped = $Uri -replace '^https://github\\.com', $env:TEST_BASE_URL; Microsoft.PowerShell.Utility\\Invoke-WebRequest -UseBasicParsing -Headers $Headers -Uri $mapped -OutFile $OutFile }",
+          "$sb = [scriptblock]::Create([System.IO.File]::ReadAllText($env:TARGET_PS1, [System.Text.Encoding]::UTF8))",
+          `try { & $sb ${extraArgs}; exit 0 } catch { [Console]::Error.WriteLine($_.Exception.Message); exit 1 }`,
+        ].join("; ");
+        const child = spawn(PS_SHELL, ["-NoProfile", "-Command", script], {
+          env: {
+            ...process.env,
+            NO_PROXY: "127.0.0.1,localhost",
+            no_proxy: "127.0.0.1,localhost",
+            TARGET_PS1: INSTALL_PS1,
+            TARGET_DEST: dest,
+            TEST_BASE_URL: baseUrl,
+          },
+          stdio: ["ignore", "pipe", "pipe"],
+        });
+        let stdout = "";
+        let stderr = "";
+        child.stdout.on("data", (d) => {
+          stdout += d.toString("utf8");
+        });
+        child.stderr.on("data", (d) => {
+          stderr += d.toString("utf8");
+        });
+        child.on("error", reject);
+        child.on("close", (status) => resolve({ status, stdout, stderr }));
+      });
+    }
+
+    try {
+      // 1. HTTP 404 on releases/latest/download falls back to main.zip with warning
+      const fallbackRes = await runHttpCase("-Destination $env:TARGET_DEST");
+      assert.equal(fallbackRes.status, 0, `${fallbackRes.stdout}\n${fallbackRes.stderr}`);
+      assert.match(`${fallbackRes.stdout}\n${fallbackRes.stderr}`, /falling back to main branch archive/i);
+      assert.deepEqual(listDirNames(dest), ["swift-core"]);
+      assert.deepEqual(requestedPaths, [
+        "/momochisoundpost/Swift-Agent-Skills-Antigravity/releases/latest/download/swift-agent-skills-antigravity.zip",
+        "/momochisoundpost/Swift-Agent-Skills-Antigravity/archive/refs/heads/main.zip",
+      ]);
+
+      // Write sentinel to confirm non-404 and -Version failures never touch destination
+      const coreManifestPath = path.join(dest, "swift-core", "plugin.json");
+      const sentinelManifest = Buffer.from('{"name":"swift-core","sentinel":true}\n', "utf8");
+      fs.writeFileSync(coreManifestPath, sentinelManifest);
+
+      // 2. HTTP 500 on releases/latest/download re-throws without falling back to main.zip
+      requestedPaths.length = 0;
+      mode = "500-fail";
+      const err500 = await runHttpCase("-Destination $env:TARGET_DEST");
+      assert.notEqual(err500.status, 0);
+      assert.doesNotMatch(`${err500.stdout}\n${err500.stderr}`, /falling back to main branch archive/i);
+      assert.deepEqual(requestedPaths, [
+        "/momochisoundpost/Swift-Agent-Skills-Antigravity/releases/latest/download/swift-agent-skills-antigravity.zip",
+      ]);
+      assert.deepEqual(fs.readFileSync(coreManifestPath), sentinelManifest);
+
+      // 3. -Version v9.9.9 HTTP 404 fails closed with release hint and never requests main.zip
+      requestedPaths.length = 0;
+      mode = "version-404";
+      const verFail = await runHttpCase("-Destination $env:TARGET_DEST -Version v9.9.9");
+      assert.notEqual(verFail.status, 0);
+      assert.match(verFail.stderr, /releases/);
+      assert.match(verFail.stderr, /agy plugin install/);
+      assert.deepEqual(requestedPaths, [
+        "/momochisoundpost/Swift-Agent-Skills-Antigravity/releases/download/v9.9.9/swift-agent-skills-antigravity.zip",
+      ]);
+      assert.deepEqual(fs.readFileSync(coreManifestPath), sentinelManifest);
+    } finally {
+      await new Promise((resolve) => server.close(resolve));
+    }
   });
 });

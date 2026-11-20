@@ -374,7 +374,7 @@ set_staged_pack_disabled() {
     {
       sub(/\015$/, "", $0)
       lines[++n] = $0
-      if ($0 ~ /"disabled"[ \t]*:/) {
+      if ($0 ~ /^[ \t]*"disabled"[ \t]*:/) {
         has_disabled = 1
       }
     }
@@ -399,7 +399,7 @@ set_staged_pack_disabled() {
         }
       }
     }
-  ' "$_manifest" > "$_tmp_manifest"; then
+  ' < "$_manifest" > "$_tmp_manifest"; then
     rm -f -- "$_tmp_manifest"
     printf 'Error: Invalid plugin.json format in %s\n' "$_manifest" >&2
     exit 1
@@ -425,7 +425,7 @@ apply_executables_chmod() {
     esac
     case " $selected_packs " in
       *" $_entry_pack "*)
-        if [ -f "$dest_root/$_rel" ]; then
+        if [ -f "$dest_root/$_rel" ] && [ ! -L "$dest_root/$_rel" ]; then
           chmod +x -- "$dest_root/$_rel"
         fi
         ;;
@@ -624,10 +624,10 @@ dest_parent="$(dirname -- "$dest_root")"
 dest_parent="$(strip_trailing_slashes "$dest_parent")"
 staging_base="${dest_parent%/}/.swift-agent-skills-staging"
 
-mkdir -p -- "$dest_root" "$staging_base"
+mkdir -p -- "$staging_base"
 run_staging_root="$(mktemp -d "${staging_base}/run.XXXXXX")"
 
-installed_csv=''
+# Pass 1: stage all selected packs and apply --all-disabled patching before touching dest_root.
 for _pack_name in $selected_packs; do
   find_plugin_source_dir "$extract_dir" "$_pack_name"
   _src_dir="$found_plugin_dir"
@@ -638,7 +638,13 @@ for _pack_name in $selected_packs; do
   if [ "$opt_all_disabled" -eq 1 ] && [ "$_pack_name" != "$DEFAULT_PACK" ]; then
     set_staged_pack_disabled "$_stage_dir"
   fi
+done
 
+# Pass 2: swap all staged packs into dest_root only after every pack staged cleanly.
+mkdir -p -- "$dest_root"
+installed_csv=''
+for _pack_name in $selected_packs; do
+  _stage_dir="$run_staging_root/$_pack_name"
   _dst_dir="$dest_root/$_pack_name"
   rm -rf -- "$_dst_dir"
   mv -- "$_stage_dir" "$_dst_dir"

@@ -130,13 +130,19 @@ agy plugin install ./Swift-Agent-Skills-Antigravity/antigravity/plugins/swift-ui
 When a user asks you to install Swift Agent Skills from `https://github.com/momochisoundpost/Swift-Agent-Skills-Antigravity`:
 
 1. **Detect the user's OS and choose the matching installer:**
-   - On **macOS or Linux**, use `install.sh` via `curl -fsSL https://raw.githubusercontent.com/momochisoundpost/Swift-Agent-Skills-Antigravity/main/install.sh | sh`.
-   - On **Windows**, use `install.ps1` via `irm https://raw.githubusercontent.com/momochisoundpost/Swift-Agent-Skills-Antigravity/main/install.ps1 | iex`.
+   - On **macOS or Linux**, use `install.sh`:
+     - Default (`swift-core` only): `curl -fsSL https://raw.githubusercontent.com/momochisoundpost/Swift-Agent-Skills-Antigravity/main/install.sh | sh`
+     - Whenever passing flags (`--packs`, `--all-disabled`, `--workspace`, etc.), pass them after `sh -s --` (never `| sh --packs ...`):
+       `curl -fsSL https://raw.githubusercontent.com/momochisoundpost/Swift-Agent-Skills-Antigravity/main/install.sh | sh -s -- --packs <list>`
+   - On **Windows**, use `install.ps1`:
+     - Default (`swift-core` only): `irm https://raw.githubusercontent.com/momochisoundpost/Swift-Agent-Skills-Antigravity/main/install.ps1 | iex`
+     - Whenever passing flags (`-Packs`, `-AllDisabled`, `-Workspace`, etc.), wrap with `[scriptblock]::Create` (never `irm ... | iex -Packs ...`):
+       `& ([scriptblock]::Create((irm https://raw.githubusercontent.com/momochisoundpost/Swift-Agent-Skills-Antigravity/main/install.ps1))) -Packs <list>`
 2. **Select packs conservatively:**
    - Default to **`swift-core` only** (5 skills) unless the user asks for specific packs or all packs, so their active context window stays lean.
-   - If the user names packs or short aliases, pass `--packs <list>` (`install.sh`) or `-Packs <list>` (`install.ps1`).
-   - If the user asks for a project-local install, add `--workspace` (`install.sh`) or `-Workspace` (`install.ps1`).
-   - If the user wants all 8 packs available in the Customizations UI without paying upfront context cost, pass `--all-disabled` (`install.sh`) or `-AllDisabled` (`install.ps1`).
+   - If the user names packs or short aliases, pass `--packs <list>` via `curl -fsSL https://raw.githubusercontent.com/momochisoundpost/Swift-Agent-Skills-Antigravity/main/install.sh | sh -s -- --packs <list>` (`install.sh`) or `-Packs <list>` via `& ([scriptblock]::Create((irm https://raw.githubusercontent.com/momochisoundpost/Swift-Agent-Skills-Antigravity/main/install.ps1))) -Packs <list>` (`install.ps1`).
+   - If the user asks for a project-local install, add `--workspace` (`| sh -s -- --workspace ...`) or `-Workspace` (`& ([scriptblock]::Create((irm ...))) -Workspace ...`).
+   - If the user wants all 8 packs available in the Customizations UI without paying upfront context cost, pass `--all-disabled` (`| sh -s -- --all-disabled`) or `-AllDisabled` (`& ([scriptblock]::Create((irm ...))) -AllDisabled`).
    - Note prerequisites before enabling `swift-ios-simulator` (macOS + Xcode + Python 3.12+ + `idb`) or `swift-asc-cli` (`asc` CLI), and warn about topic overlap if enabling `swift-extras` alongside `swift-core` / `swift-ui-craft`.
 3. **Never hand-edit `config.json`:**
    - **Never** modify `~/.gemini/config/config.json` (or `%USERPROFILE%\.gemini\config\config.json`), and do not manually assemble partial plugin directories when the official installer is available.
