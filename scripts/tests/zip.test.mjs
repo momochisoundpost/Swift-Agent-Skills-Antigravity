@@ -94,7 +94,6 @@ describe("zip", () => {
   });
 
   test("zip extracts with platform tool", (t) => {
-    // Expand Windows 8.3 short temp names (e.g., RUNNER~1) so PS 5.1 Expand-Archive zip-slip check matches.
     const dir = trackTemp(fs.realpathSync.native(makeTempDir("zip-tool-")));
     const zipPath = path.join(dir, "archive.zip");
     const outDir = path.join(dir, "extracted");
@@ -105,11 +104,16 @@ describe("zip", () => {
     fs.writeFileSync(zipPath, createZip(entries));
 
     if (process.platform === "win32") {
-      const psCmd = `$ErrorActionPreference = 'Stop'; Expand-Archive -LiteralPath '${zipPath.replace(/'/g, "''")}' -DestinationPath '${outDir.replace(/'/g, "''")}' -Force`;
+      // Use .NET ZipFile (same extractor as install.ps1) to avoid PS 5.1 Microsoft.PowerShell.Archive overload bugs.
+      const psCmd = [
+        "$ErrorActionPreference = 'Stop'",
+        "Add-Type -AssemblyName System.IO.Compression.FileSystem",
+        `[System.IO.Compression.ZipFile]::ExtractToDirectory('${zipPath.replace(/'/g, "''")}', '${outDir.replace(/'/g, "''")}')`,
+      ].join("; ");
       const res = spawnSync("powershell", ["-NoProfile", "-Command", psCmd], {
         encoding: "utf8",
       });
-      assert.equal(res.status, 0, `Expand-Archive failed: ${res.stderr}`);
+      assert.equal(res.status, 0, `ZipFile.ExtractToDirectory failed: ${res.stderr}`);
       assert.equal(fs.readFileSync(path.join(outDir, "a", "x.sh"), "utf8"), "#!/bin/sh\necho hi\n");
       assert.equal(fs.readFileSync(path.join(outDir, "a", "é.md"), "utf8"), "z".repeat(5000));
       return;
