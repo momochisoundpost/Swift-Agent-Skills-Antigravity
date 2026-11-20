@@ -1,0 +1,30 @@
+{
+  "$schema": "https://antigravity.google/schemas/v1/plugin.json",
+  "name": "swift-apple-frameworks",
+  "displayName": "Apple Frameworks for Swift (Community)",
+  "description": "Apple platform framework skills for App Intents, Widgets, Background Execution, Observability, FormatStyle, Core Data, and SwiftData testing.",
+  "version": "1.0.0",
+  "logo": "assets/logo.svg",
+  "suggestedPrompts": [
+    "Design an App Intent and Spotlight-ready AppEntity for this core user action",
+    "Add a WidgetKit timeline provider with interactive AppIntent buttons and lock screen support",
+    "Replace legacy DateFormatter calls with modern Swift FormatStyle and configure OSLog signposts"
+  ],
+  "author": {
+    "name": "momochisoundpost",
+    "url": "https://github.com/momochisoundpost"
+  },
+  "homepage": "https://github.com/momochisoundpost/Swift-Agent-Skills-Antigravity",
+  "repository": "https://github.com/momochisoundpost/Swift-Agent-Skills-Antigravity",
+  "license": "MIT",
+  "keywords": [
+    "swift",
+    "app-intents",
+    "widgetkit",
+    "background-tasks",
+    "oslog",
+    "formatstyle",
+    "core-data",
+    "swiftdata"
+  ]
+}

@@ -1,0 +1,29 @@
+{
+  "$schema": "https://antigravity.google/schemas/v1/plugin.json",
+  "name": "swift-ios-simulator",
+  "displayName": "iOS Simulator (Community)",
+  "description": "Semantic iOS Simulator automation and inspection scripts for building, launching, tapping, accessibility checking, and capturing logs on macOS.",
+  "version": "1.0.0",
+  "logo": "assets/logo.svg",
+  "suggestedPrompts": [
+    "Boot an iPhone simulator, install my built app, and verify the main navigation flow",
+    "Inspect the accessibility tree and test Dynamic Type scaling on the active simulator screen",
+    "Capture simulator screenshots and console logs while reproducing a UI state transition"
+  ],
+  "author": {
+    "name": "momochisoundpost",
+    "url": "https://github.com/momochisoundpost"
+  },
+  "homepage": "https://github.com/momochisoundpost/Swift-Agent-Skills-Antigravity",
+  "repository": "https://github.com/momochisoundpost/Swift-Agent-Skills-Antigravity",
+  "license": "MIT",
+  "keywords": [
+    "ios-simulator",
+    "simctl",
+    "idb",
+    "xcode",
+    "ui-testing",
+    "automation",
+    "macos"
+  ]
+}

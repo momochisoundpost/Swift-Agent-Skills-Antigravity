@@ -1,0 +1,30 @@
+{
+  "$schema": "https://antigravity.google/schemas/v1/plugin.json",
+  "name": "swift-ui-craft",
+  "displayName": "SwiftUI Craft (Community)",
+  "description": "SwiftUI UI patterns, view refactoring, performance auditing, visual design principles, accessibility, UX microcopy, and FocusEngine skills.",
+  "version": "1.0.0",
+  "logo": "assets/logo.svg",
+  "suggestedPrompts": [
+    "Refactor this large SwiftUI view into composable subviews without unnecessary redraws",
+    "Audit this SwiftUI screen for VoiceOver accessibility, Dynamic Type, and UX copy clarity",
+    "Review my SwiftUI layout and design choices for Apple Human Interface Guidelines alignment"
+  ],
+  "author": {
+    "name": "momochisoundpost",
+    "url": "https://github.com/momochisoundpost"
+  },
+  "homepage": "https://github.com/momochisoundpost/Swift-Agent-Skills-Antigravity",
+  "repository": "https://github.com/momochisoundpost/Swift-Agent-Skills-Antigravity",
+  "license": "MIT",
+  "keywords": [
+    "swiftui",
+    "design",
+    "accessibility",
+    "performance",
+    "refactor",
+    "focus-engine",
+    "ux-writing",
+    "apple"
+  ]
+}

@@ -1,0 +1,30 @@
+{
+  "$schema": "https://antigravity.google/schemas/v1/plugin.json",
+  "name": "swift-core",
+  "displayName": "Swift Core (Community)",
+  "description": "Core Swift, SwiftUI, SwiftData, Swift Concurrency, Swift Testing, and API Design Guidelines skills from leading community authors.",
+  "version": "1.0.0",
+  "logo": "assets/logo.svg",
+  "suggestedPrompts": [
+    "Review this SwiftUI view and suggest state management and modern API improvements",
+    "Help me migrate this completion-handler service to strict Swift concurrency with actors",
+    "Write Swift Testing unit tests with parameterized arguments for this SwiftData model"
+  ],
+  "author": {
+    "name": "momochisoundpost",
+    "url": "https://github.com/momochisoundpost"
+  },
+  "homepage": "https://github.com/momochisoundpost/Swift-Agent-Skills-Antigravity",
+  "repository": "https://github.com/momochisoundpost/Swift-Agent-Skills-Antigravity",
+  "license": "MIT",
+  "keywords": [
+    "swift",
+    "swiftui",
+    "swiftdata",
+    "concurrency",
+    "swift-testing",
+    "ios",
+    "macos",
+    "apple"
+  ]
+}

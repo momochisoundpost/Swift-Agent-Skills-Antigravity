@@ -1,0 +1,29 @@
+{
+  "$schema": "https://antigravity.google/schemas/v1/plugin.json",
+  "name": "swift-app-store",
+  "displayName": "App Store Toolkit (Community)",
+  "description": "App Store release preparation skills covering release changelogs, App Store Optimization (ASO), and App Review guideline checks.",
+  "version": "1.0.0",
+  "logo": "assets/logo.svg",
+  "suggestedPrompts": [
+    "Generate user-friendly App Store release notes from commits since the last tag",
+    "Optimize our App Store title, subtitle, and keyword field for search discoverability",
+    "Review this iOS release build and metadata against App Store Review Guidelines"
+  ],
+  "author": {
+    "name": "momochisoundpost",
+    "url": "https://github.com/momochisoundpost"
+  },
+  "homepage": "https://github.com/momochisoundpost/Swift-Agent-Skills-Antigravity",
+  "repository": "https://github.com/momochisoundpost/Swift-Agent-Skills-Antigravity",
+  "license": "MIT",
+  "keywords": [
+    "app-store",
+    "aso",
+    "release-notes",
+    "app-review",
+    "ios",
+    "macos",
+    "distribution"
+  ]
+}

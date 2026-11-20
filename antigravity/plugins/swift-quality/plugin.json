@@ -1,0 +1,29 @@
+{
+  "$schema": "https://antigravity.google/schemas/v1/plugin.json",
+  "name": "swift-quality",
+  "displayName": "Swift Code Quality (Community)",
+  "description": "Architecture guidance, iOS/Swift security hardening, and comprehensive codebase audit skills for Apple platform projects.",
+  "version": "1.0.0",
+  "logo": "assets/logo.svg",
+  "suggestedPrompts": [
+    "Audit this iOS codebase for security vulnerabilities, keychain handling, and ATS gaps",
+    "Evaluate our module boundaries and recommend a clean Swift architecture pattern",
+    "Run a full code quality and maintainability audit across our Swift source files"
+  ],
+  "author": {
+    "name": "momochisoundpost",
+    "url": "https://github.com/momochisoundpost"
+  },
+  "homepage": "https://github.com/momochisoundpost/Swift-Agent-Skills-Antigravity",
+  "repository": "https://github.com/momochisoundpost/Swift-Agent-Skills-Antigravity",
+  "license": "MIT",
+  "keywords": [
+    "swift",
+    "architecture",
+    "security",
+    "code-audit",
+    "ios",
+    "quality",
+    "best-practices"
+  ]
+}

@@ -1,0 +1,182 @@
+{
+  "rewrites": [
+    {
+      "plugin": "swift-quality",
+      "file": "skills/ios-code-audit/references/agent-prompts.md",
+      "find": "multiple `Agent` tool calls",
+      "replace": "multiple `invoke_subagent` calls"
+    },
+    {
+      "plugin": "swift-app-store",
+      "file": "skills/appstore-review/SKILL.md",
+      "find": "agents:\n  - claude-code",
+      "replace": "agents:\n  - antigravity"
+    },
+    {
+      "plugin": "swift-app-store",
+      "file": "skills/appstore-review/README.md",
+      "find": "## Quick start\n\n```bash\n./scripts/install.sh appstore-review\n```\n\nThen in Claude Code, from your iOS project:\n\n```\n/appstore-review\n```\n\nFor full setup instructions — including how to register the skill in your\nCLAUDE.md, add a standing checklist, and what output to expect — see the\n[Setup & Usage Guide](references/setup-guide.md).",
+      "replace": "## Quick start\n\nEnable the `swift-app-store` plugin in Antigravity Customizations (or copy\n`skills/appstore-review` into your project's `.agents/skills/` directory).\n\nThen from your iOS project workspace, ask the agent to run an App Store review\naudit with `appstore-review`:\n\n```\nRun the appstore-review audit on this iOS project.\n```\n\nFor full setup instructions — including how to configure project rules in\n`AGENTS.md` / `GEMINI.md`, add a standing checklist, and what output to expect\n— see the [Setup & Usage Guide](references/setup-guide.md)."
+    },
+    {
+      "plugin": "swift-app-store",
+      "file": "skills/appstore-review/references/setup-guide.md",
+      "find": "## 1. Install the skill\n\n### Option A: Install script\n\n```bash\ngit clone https://github.com/3paws-ai/mobile-ai-skills.git\ncd mobile-ai-skills\n./scripts/install.sh appstore-review\n```\n\nThis copies the skill to `~/.claude/skills/appstore-review/`.\n\n### Option B: Manual copy\n\n```bash\ncp -R skills/appstore-review ~/.claude/skills/appstore-review\n```\n\n### Verify installation\n\nAfter installing, confirm these files exist:\n\n```\n~/.claude/skills/appstore-review/\n  SKILL.md\n  references/\n    appstore-review-ref.md\n    setup-guide.md\n```",
+      "replace": "## 1. Install the skill\n\n### Option A: Antigravity plugin (recommended)\n\nEnable the `swift-app-store` plugin in Antigravity Customizations. The skill is\ndiscovered automatically whenever the plugin is enabled.\n\n### Option B: Manual copy (workspace or global)\n\n```bash\ncp -R skills/appstore-review .agents/skills/appstore-review\n# or globally: cp -R skills/appstore-review ~/.gemini/config/skills/appstore-review\n```\n\n### Verify installation\n\nAfter installing standalone, confirm these files exist:\n\n```\n~/.gemini/config/skills/appstore-review/\n  SKILL.md\n  references/\n    appstore-review-ref.md\n    setup-guide.md\n```"
+    },
+    {
+      "plugin": "swift-app-store",
+      "file": "skills/appstore-review/references/setup-guide.md",
+      "find": "## 2. Register the skill in your CLAUDE.md\n\nFor Claude Code to know about the skill, add it to your `~/.claude/CLAUDE.md`\n(global) or your project's `CLAUDE.md`. Add an entry to your skills table:\n\n```markdown\n## Skills\n\n| Task | Skill to read |\n|---|---|\n| App Store review readiness audit | `~/.claude/skills/appstore-review/SKILL.md` |\n```\n\nThis tells the agent where to find the skill when invoked.",
+      "replace": "## 2. Automatic discovery and project rules (`AGENTS.md` / `GEMINI.md`)\n\nAntigravity automatically discovers skills inside an enabled plugin,\n`.agents/skills/`, or `~/.gemini/config/skills/`. Optionally, add a pointer\nin your `~/.gemini/config/AGENTS.md` or project `AGENTS.md` / `GEMINI.md`:\n\n```markdown\n## Skills\n\n| Task | Skill to read |\n|---|---|\n| App Store review readiness audit | `appstore-review` (`SKILL.md`) |\n```\n\nThis reinforces when the agent should invoke the skill."
+    },
+    {
+      "plugin": "swift-app-store",
+      "file": "skills/appstore-review/references/setup-guide.md",
+      "find": "your CLAUDE.md so the agent flags these even outside of a full audit:",
+      "replace": "your `AGENTS.md` or `GEMINI.md` so the agent flags these even outside of a full audit:"
+    },
+    {
+      "plugin": "swift-app-store",
+      "file": "skills/appstore-review/references/setup-guide.md",
+      "find": "From your iOS project directory in Claude Code:\n\n```\n/appstore-review\n```",
+      "replace": "From your iOS project workspace in Antigravity, ask the agent:\n\n```\nRun the appstore-review audit on this iOS project.\n```"
+    },
+    {
+      "plugin": "swift-ios-simulator",
+      "file": "skills/ios-simulator-skill/SKILL.md",
+      "find": "Use these scripts directly or let Claude Code invoke them automatically when your request matches the skill description.",
+      "replace": "Use these scripts directly or let Antigravity invoke them automatically when your request matches the skill description."
+    },
+    {
+      "plugin": "swift-extras",
+      "file": "skills/appkit-accessibility-auditor/SKILL.md",
+      "find": "  supported-runtimes: \"cursor, claude, codex, skills.sh\"",
+      "replace": "  supported-runtimes: \"antigravity, cursor, claude, codex, skills.sh\""
+    },
+    {
+      "plugin": "swift-extras",
+      "file": "skills/swiftui-accessibility-auditor/SKILL.md",
+      "find": "  supported-runtimes: \"cursor, claude, codex, skills.sh\"",
+      "replace": "  supported-runtimes: \"antigravity, cursor, claude, codex, skills.sh\""
+    },
+    {
+      "plugin": "swift-extras",
+      "file": "skills/uikit-accessibility-auditor/SKILL.md",
+      "find": "  supported-runtimes: \"cursor, claude, codex, skills.sh\"",
+      "replace": "  supported-runtimes: \"antigravity, cursor, claude, codex, skills.sh\""
+    }
+  ],
+  "allowlist": [
+    {
+      "plugin": "swift-ui-craft",
+      "file": "skills/writing-for-interfaces/README.md",
+      "pattern": "(`CLAUDE.md / AGENTS.md`, style guides"
+    },
+    {
+      "plugin": "swift-ui-craft",
+      "file": "skills/writing-for-interfaces/SKILL.md",
+      "pattern": "- A `CLAUDE.md`, `AGENTS.md`, or similar project config"
+    },
+    {
+      "plugin": "swift-ui-craft",
+      "file": "skills/writing-for-interfaces/SKILL.md",
+      "pattern": "(`AGENTS.md`, `CLAUDE.md` or style guide document)"
+    },
+    {
+      "plugin": "swift-apple-frameworks",
+      "file": "skills/swiftdata-testing/references/decimal-money-values.md",
+      "pattern": "`CLAUDE.md`-style layer rules"
+    },
+    {
+      "plugin": "swift-quality",
+      "file": "skills/ios-code-audit/SKILL.md",
+      "pattern": "Check `CLAUDE.md` / project README"
+    },
+    {
+      "plugin": "swift-quality",
+      "file": "skills/ios-code-audit/SKILL.md",
+      "pattern": "Read `CLAUDE.md` if present"
+    },
+    {
+      "plugin": "swift-quality",
+      "file": "skills/ios-code-audit/SKILL.md",
+      "pattern": "known-stale files from `CLAUDE.md`."
+    },
+    {
+      "plugin": "swift-quality",
+      "file": "skills/ios-code-audit/references/agent-prompts.md",
+      "pattern": "Read `CLAUDE.md` for \"do not edit\" / archive directories"
+    },
+    {
+      "plugin": "swift-quality",
+      "file": "skills/ios-code-audit/references/agent-prompts.md",
+      "pattern": "central state files named in CLAUDE.md."
+    },
+    {
+      "plugin": "swift-quality",
+      "file": "skills/ios-code-audit/references/agent-prompts.md",
+      "pattern": "Read CLAUDE.md and the project README."
+    },
+    {
+      "plugin": "swift-quality",
+      "file": "skills/ios-code-audit/references/report-template.md",
+      "pattern": "intentional archive per `CLAUDE.md`"
+    },
+    {
+      "plugin": "swift-quality",
+      "file": "skills/swift-security-expert/references/compliance-owasp-mapping.md",
+      "pattern": "the Claude source recommends `kSecAttrAccessibleWhenPasscodeSetThisDeviceOnly`"
+    },
+    {
+      "plugin": "swift-quality",
+      "file": "skills/swift-security-expert/references/cryptokit-public-key.md",
+      "pattern": "The Claude source shows `encapsulatedKey`"
+    },
+    {
+      "plugin": "swift-quality",
+      "file": "skills/swift-security-expert/references/cryptokit-public-key.md",
+      "pattern": "The Claude source's Security framework example is the correct API."
+    },
+    {
+      "plugin": "swift-quality",
+      "file": "skills/swift-security-expert/references/keychain-fundamentals.md",
+      "pattern": "Claude source uses `[CFString: Any]`"
+    },
+    {
+      "plugin": "swift-quality",
+      "file": "skills/swift-security-expert/references/keychain-fundamentals.md",
+      "pattern": "Claude source cites OWASP"
+    },
+    {
+      "plugin": "swift-quality",
+      "file": "skills/swift-security-expert/references/keychain-fundamentals.md",
+      "pattern": "Claude source does not mention this."
+    },
+    {
+      "plugin": "swift-quality",
+      "file": "skills/swift-security-expert/references/secure-enclave.md",
+      "pattern": "The Claude research source documents"
+    },
+    {
+      "plugin": "swift-extras",
+      "file": "skills/swift-accessibility-skill/resources/qa-checklist.md",
+      "pattern": "no skill or Claude knowledge required."
+    },
+    {
+      "plugin": "swift-extras",
+      "file": "skills/appkit-accessibility-auditor/SKILL.md",
+      "pattern": "supported-runtimes: \"antigravity, cursor, claude, codex, skills.sh\""
+    },
+    {
+      "plugin": "swift-extras",
+      "file": "skills/swiftui-accessibility-auditor/SKILL.md",
+      "pattern": "supported-runtimes: \"antigravity, cursor, claude, codex, skills.sh\""
+    },
+    {
+      "plugin": "swift-extras",
+      "file": "skills/uikit-accessibility-auditor/SKILL.md",
+      "pattern": "supported-runtimes: \"antigravity, cursor, claude, codex, skills.sh\""
+    }
+  ]
+}

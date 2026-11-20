@@ -1,0 +1,291 @@
+{
+  "upstreams": {
+    "twostraws/SwiftUI-Agent-Skill": {
+      "repo": "https://github.com/twostraws/SwiftUI-Agent-Skill.git",
+      "ref": "main",
+      "sha": "f2920b63995263f57b3e198674e89a602efba6d2",
+      "license": "LICENSE",
+      "author": "Paul Hudson"
+    },
+    "twostraws/SwiftData-Agent-Skill": {
+      "repo": "https://github.com/twostraws/SwiftData-Agent-Skill.git",
+      "ref": "main",
+      "sha": "8051f177a0076e7fd45bdf4ee687b070ba58fdc6",
+      "license": "LICENSE",
+      "author": "Paul Hudson"
+    },
+    "twostraws/Swift-Concurrency-Agent-Skill": {
+      "repo": "https://github.com/twostraws/Swift-Concurrency-Agent-Skill.git",
+      "ref": "main",
+      "sha": "bee3f69ba17142da148d3c5406f148ed62592b69",
+      "license": "LICENSE",
+      "author": "Paul Hudson"
+    },
+    "twostraws/Swift-Testing-Agent-Skill": {
+      "repo": "https://github.com/twostraws/Swift-Testing-Agent-Skill.git",
+      "ref": "main",
+      "sha": "2d6bba14a3c8bf3694f218b92fffe617c41ae43e",
+      "license": "LICENSE",
+      "author": "Paul Hudson"
+    },
+    "Erikote04/Swift-API-Design-Guidelines-Agent-Skill": {
+      "repo": "https://github.com/Erikote04/Swift-API-Design-Guidelines-Agent-Skill.git",
+      "ref": "main",
+      "sha": "36cdc1b5680f5d6c5c52c353a6857d176f4929e8",
+      "license": "LICENSE",
+      "author": "Erik Sebastián de Erice"
+    },
+    "Dimillian/Skills": {
+      "repo": "https://github.com/Dimillian/Skills.git",
+      "ref": "main",
+      "sha": "05ba982bfeb0d77d3c97d4542b0ee15034d05f84",
+      "license": "LICENSE",
+      "author": "Thomas Ricouard"
+    },
+    "arjitj2/swiftui-design-principles": {
+      "repo": "https://github.com/arjitj2/swiftui-design-principles.git",
+      "ref": "main",
+      "sha": "791d22d73f844167a3872530e3941185b730d8be",
+      "license": "LICENSE",
+      "author": "Arjit Jaiswal"
+    },
+    "dadederk/iOS-Accessibility-Agent-Skill": {
+      "repo": "https://github.com/dadederk/iOS-Accessibility-Agent-Skill.git",
+      "ref": "main",
+      "sha": "dcc3a36ce1d0099341d545c1af4eb5a8c989bf66",
+      "license": "LICENSE",
+      "author": "Daniel Devesa"
+    },
+    "andrewgleave/skills": {
+      "repo": "https://github.com/andrewgleave/skills.git",
+      "ref": "main",
+      "sha": "d6c72b885a1902d4b74d4bd9beca80f2a1b96b51",
+      "license": "LICENSE",
+      "author": "Andrew Gleave"
+    },
+    "mhaviv/Swift-FocusEngine-Agent-Skill": {
+      "repo": "https://github.com/mhaviv/Swift-FocusEngine-Agent-Skill.git",
+      "ref": "main",
+      "sha": "903d58d0ed03d4b85251d34dd96687eb822b3291",
+      "license": "LICENSE",
+      "author": "Michael Haviv"
+    },
+    "n0an/Swift-FormatStyle-Agent-Skill": {
+      "repo": "https://github.com/n0an/Swift-FormatStyle-Agent-Skill.git",
+      "ref": "main",
+      "sha": "5cda783ac709f26893bbbfb61b31c930c1e6a300",
+      "license": "LICENSE",
+      "author": "Anton Novoselov"
+    },
+    "n0an/App-Intents-Agent-Skill": {
+      "repo": "https://github.com/n0an/App-Intents-Agent-Skill.git",
+      "ref": "main",
+      "sha": "f754f08c5ef45515cf51b026f87f8aa89d747f7d",
+      "license": "LICENSE",
+      "author": "Anton Novoselov"
+    },
+    "n0an/Background-Execution-Agent-Skill": {
+      "repo": "https://github.com/n0an/Background-Execution-Agent-Skill.git",
+      "ref": "main",
+      "sha": "a29ddf879308bc6cb0d5add020533701baa7fe67",
+      "license": "LICENSE",
+      "author": "Anton Novoselov"
+    },
+    "n0an/Observability-Agent-Skill": {
+      "repo": "https://github.com/n0an/Observability-Agent-Skill.git",
+      "ref": "main",
+      "sha": "4ab4f371b03b2015767fbe9da7d4321293bfc377",
+      "license": "LICENSE",
+      "author": "Anton Novoselov"
+    },
+    "n0an/Widgets-Agent-Skill": {
+      "repo": "https://github.com/n0an/Widgets-Agent-Skill.git",
+      "ref": "main",
+      "sha": "06567e152df00df1db50a2935bbe62fda9e27c19",
+      "license": "LICENSE",
+      "author": "Anton Novoselov"
+    },
+    "AvdLee/Core-Data-Agent-Skill": {
+      "repo": "https://github.com/AvdLee/Core-Data-Agent-Skill.git",
+      "ref": "main",
+      "sha": "855ca7d0df50e82b00c12881dd9cd23c19ef5f49",
+      "license": "LICENSE",
+      "author": "Antoine van der Lee"
+    },
+    "akshaypimprikar/ios-swiftdata-testing-agent-skill": {
+      "repo": "https://github.com/akshaypimprikar/ios-swiftdata-testing-agent-skill.git",
+      "ref": "main",
+      "sha": "e8a98757b3e62e9dcfce0ce08e50ee40137c2b22",
+      "license": "LICENSE",
+      "author": "Akshay Pimprikar"
+    },
+    "efremidze/swift-architecture-skill": {
+      "repo": "https://github.com/efremidze/swift-architecture-skill.git",
+      "ref": "main",
+      "sha": "60e177612f4ed9dc7799b3674830e594c76fa00c",
+      "license": "LICENSE",
+      "author": "Lasha Efremidze"
+    },
+    "ivan-magda/swift-security-skill": {
+      "repo": "https://github.com/ivan-magda/swift-security-skill.git",
+      "ref": "main",
+      "sha": "bda2e0ccee6a64d45ec2b93790d0876c90e4eb89",
+      "license": "LICENSE",
+      "author": "Ivan Magda"
+    },
+    "jazzychad/ios-code-audit": {
+      "repo": "https://github.com/jazzychad/ios-code-audit.git",
+      "ref": "main",
+      "sha": "34edb296a150915f8fcca69f27543af0c231c616",
+      "license": "LICENSE",
+      "author": "Chad Etzel"
+    },
+    "TimBroddin/app-store-aso-skill": {
+      "repo": "https://github.com/TimBroddin/app-store-aso-skill.git",
+      "ref": "main",
+      "sha": "3f0b917384ae245e34bd6cb7fe716d0995a64f4e",
+      "license": "LICENSE",
+      "author": "Tim Broddin"
+    },
+    "3paws-ai/mobile-ai-skills": {
+      "repo": "https://github.com/3paws-ai/mobile-ai-skills.git",
+      "ref": "main",
+      "sha": "6d3570eab02b57d8f8269ef11a1ef8ffcb1c8553",
+      "license": "LICENSE",
+      "author": "Dann Beauregard"
+    },
+    "rorkai/app-store-connect-cli-skills": {
+      "repo": "https://github.com/rorkai/app-store-connect-cli-skills.git",
+      "ref": "main",
+      "sha": "6d1c3c55fe4590fcbc3e3115de18c5721a73c23b",
+      "license": "LICENSE",
+      "author": "Rudrank Riyam",
+      "credit": "originally rudrankriyam/app-store-connect-cli-skills"
+    },
+    "conorluddy/ios-simulator-skill": {
+      "repo": "https://github.com/conorluddy/ios-simulator-skill.git",
+      "ref": "main",
+      "sha": "86fb9ba90a438bd2ee7ab640165bd77da396d941",
+      "license": "LICENSE.md",
+      "author": "Conor Luddy"
+    },
+    "AvdLee/Swift-Concurrency-Agent-Skill": {
+      "repo": "https://github.com/AvdLee/Swift-Concurrency-Agent-Skill.git",
+      "ref": "main",
+      "sha": "3b1580d8398e0b5408b3bf0bada0e941a1cfc642",
+      "license": "LICENSE",
+      "author": "Antoine van der Lee"
+    },
+    "AvdLee/Swift-Testing-Agent-Skill": {
+      "repo": "https://github.com/AvdLee/Swift-Testing-Agent-Skill.git",
+      "ref": "main",
+      "sha": "798e9b1a2bcac164d4f0c781908199e754f0bab6",
+      "license": "LICENSE",
+      "author": "Antoine van der Lee"
+    },
+    "vanab/SwiftData-agent-skill": {
+      "repo": "https://github.com/vanab/SwiftData-agent-skill.git",
+      "ref": "main",
+      "sha": "4819a5381fa5fdce894451822917b1135c19e050",
+      "license": "LICENSE",
+      "author": "Kudrin Dmitry"
+    },
+    "bocato/swift-testing-agent-skill": {
+      "repo": "https://github.com/bocato/swift-testing-agent-skill.git",
+      "ref": "main",
+      "sha": "c2dd1b051c8359fa29acdbf0ceb0c6b0e8341a1c",
+      "license": "LICENSE",
+      "author": "Eduardo Bocato"
+    },
+    "PasqualeVittoriosi/swift-accessibility-skill": {
+      "repo": "https://github.com/PasqualeVittoriosi/swift-accessibility-skill.git",
+      "ref": "main",
+      "sha": "3791850af76f11cffa552b3394f2b8732d7ce3c7",
+      "license": "LICENSE",
+      "author": "Pasquale Vittoriosi"
+    },
+    "rgmez/apple-accessibility-skills": {
+      "repo": "https://github.com/rgmez/apple-accessibility-skills.git",
+      "ref": "main",
+      "sha": "2fff4d8bcf82d5f1a99e31ac8fda72698d5ff3a3",
+      "license": "LICENSE",
+      "author": "Roberto Gómez Muñoz"
+    }
+  },
+  "plugins": {
+    "swift-core": {
+      "skills": [
+        { "upstream": "twostraws/SwiftUI-Agent-Skill", "path": "swiftui-pro" },
+        { "upstream": "twostraws/SwiftData-Agent-Skill", "path": "swiftdata-pro" },
+        { "upstream": "twostraws/Swift-Concurrency-Agent-Skill", "path": "swift-concurrency-pro" },
+        { "upstream": "twostraws/Swift-Testing-Agent-Skill", "path": "swift-testing-pro" },
+        {
+          "upstream": "Erikote04/Swift-API-Design-Guidelines-Agent-Skill",
+          "path": "swift-api-design-guidelines-skill"
+        }
+      ]
+    },
+    "swift-ui-craft": {
+      "skills": [
+        { "upstream": "Dimillian/Skills", "path": "swiftui-ui-patterns" },
+        { "upstream": "Dimillian/Skills", "path": "swiftui-view-refactor" },
+        { "upstream": "Dimillian/Skills", "path": "swiftui-performance-audit" },
+        { "upstream": "arjitj2/swiftui-design-principles", "path": "." },
+        { "upstream": "dadederk/iOS-Accessibility-Agent-Skill", "path": "ios-accessibility" },
+        { "upstream": "andrewgleave/skills", "path": "writing-for-interfaces" },
+        { "upstream": "mhaviv/Swift-FocusEngine-Agent-Skill", "path": "." }
+      ]
+    },
+    "swift-apple-frameworks": {
+      "skills": [
+        { "upstream": "n0an/Swift-FormatStyle-Agent-Skill", "path": "swift-format-style" },
+        { "upstream": "n0an/App-Intents-Agent-Skill", "path": "app-intents" },
+        { "upstream": "n0an/Background-Execution-Agent-Skill", "path": "background-execution" },
+        { "upstream": "n0an/Observability-Agent-Skill", "path": "observability" },
+        { "upstream": "n0an/Widgets-Agent-Skill", "path": "widgets" },
+        { "upstream": "AvdLee/Core-Data-Agent-Skill", "path": "core-data-expert" },
+        { "upstream": "akshaypimprikar/ios-swiftdata-testing-agent-skill", "path": "swiftdata-testing" }
+      ]
+    },
+    "swift-quality": {
+      "skills": [
+        { "upstream": "efremidze/swift-architecture-skill", "path": "swift-architecture-skill" },
+        { "upstream": "ivan-magda/swift-security-skill", "path": "swift-security-expert" },
+        { "upstream": "jazzychad/ios-code-audit", "path": "." }
+      ]
+    },
+    "swift-app-store": {
+      "skills": [
+        { "upstream": "Dimillian/Skills", "path": "app-store-changelog" },
+        { "upstream": "TimBroddin/app-store-aso-skill", "path": "." },
+        { "upstream": "3paws-ai/mobile-ai-skills", "path": "skills/appstore-review" }
+      ]
+    },
+    "swift-asc-cli": {
+      "skills": [
+        { "upstream": "rorkai/app-store-connect-cli-skills", "glob": "skills/asc-*" }
+      ]
+    },
+    "swift-ios-simulator": {
+      "skills": [
+        {
+          "upstream": "conorluddy/ios-simulator-skill",
+          "path": "ios-simulator-skill/skills/ios-simulator-skill"
+        }
+      ]
+    },
+    "swift-extras": {
+      "skills": [
+        { "upstream": "AvdLee/Swift-Concurrency-Agent-Skill", "path": "skills/swift-concurrency" },
+        { "upstream": "AvdLee/Swift-Testing-Agent-Skill", "path": "swift-testing-expert" },
+        { "upstream": "Dimillian/Skills", "path": "swift-concurrency-expert" },
+        { "upstream": "vanab/SwiftData-agent-skill", "path": "swiftdata-expert-skill" },
+        { "upstream": "bocato/swift-testing-agent-skill", "path": "swift-testing" },
+        { "upstream": "PasqualeVittoriosi/swift-accessibility-skill", "path": "swift-accessibility-skill" },
+        { "upstream": "rgmez/apple-accessibility-skills", "path": "skills/appkit-accessibility-auditor" },
+        { "upstream": "rgmez/apple-accessibility-skills", "path": "skills/swiftui-accessibility-auditor" },
+        { "upstream": "rgmez/apple-accessibility-skills", "path": "skills/uikit-accessibility-auditor" }
+      ]
+    }
+  }
+}
