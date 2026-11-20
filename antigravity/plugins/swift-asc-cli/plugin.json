@@ -1,0 +1,29 @@
+{
+  "$schema": "https://antigravity.google/schemas/v1/plugin.json",
+  "name": "swift-asc-cli",
+  "displayName": "App Store Connect CLI (Community)",
+  "description": "End-to-end App Store Connect CLI (`asc`) automation across 26 skills for TestFlight, builds, signing, metadata, IAP, and submissions.",
+  "version": "1.0.0",
+  "logo": "assets/logo.svg",
+  "suggestedPrompts": [
+    "List recent App Store Connect builds and distribute the latest build to a TestFlight beta group",
+    "Sync App Store metadata, release notes, and localized screenshots with asc",
+    "Check signing certificates, provisioning profiles, and app submission status via asc"
+  ],
+  "author": {
+    "name": "momochisoundpost",
+    "url": "https://github.com/momochisoundpost"
+  },
+  "homepage": "https://github.com/momochisoundpost/Swift-Agent-Skills-Antigravity",
+  "repository": "https://github.com/momochisoundpost/Swift-Agent-Skills-Antigravity",
+  "license": "MIT",
+  "keywords": [
+    "app-store-connect",
+    "asc",
+    "testflight",
+    "signing",
+    "release",
+    "ios",
+    "cli"
+  ]
+}

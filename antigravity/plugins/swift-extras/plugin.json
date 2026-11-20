@@ -1,0 +1,30 @@
+{
+  "$schema": "https://antigravity.google/schemas/v1/plugin.json",
+  "name": "swift-extras",
+  "displayName": "Swift Extras: Alternatives (Community)",
+  "description": "Alternative community perspectives on Swift Concurrency, Swift Testing, SwiftData, and multi-platform Apple accessibility auditing.",
+  "version": "1.0.0",
+  "logo": "assets/logo.svg",
+  "suggestedPrompts": [
+    "Audit our SwiftUI, UIKit, or AppKit screens for WCAG and Apple accessibility gaps",
+    "Review Sendable conformance and Swift 6 actor isolation patterns in this module",
+    "Compare SwiftData model migration strategies and Swift Testing suite conventions"
+  ],
+  "author": {
+    "name": "momochisoundpost",
+    "url": "https://github.com/momochisoundpost"
+  },
+  "homepage": "https://github.com/momochisoundpost/Swift-Agent-Skills-Antigravity",
+  "repository": "https://github.com/momochisoundpost/Swift-Agent-Skills-Antigravity",
+  "license": "MIT",
+  "keywords": [
+    "swift",
+    "concurrency",
+    "swift-testing",
+    "swiftdata",
+    "accessibility",
+    "swiftui",
+    "uikit",
+    "appkit"
+  ]
+}
