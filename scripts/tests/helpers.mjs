@@ -3,6 +3,19 @@ import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
 import { pathToFileURL } from "node:url";
+import { ANTIGRAVITY_SCHEMA_URL } from "../antigravity/lib.mjs";
+import { packageRelease } from "../antigravity/package-release.mjs";
+
+export const EIGHT_PACK_NAMES = [
+  "swift-core",
+  "swift-ui-craft",
+  "swift-apple-frameworks",
+  "swift-quality",
+  "swift-app-store",
+  "swift-asc-cli",
+  "swift-ios-simulator",
+  "swift-extras",
+];
 
 const GIT_BASE_ARGS = ["-c", "core.autocrlf=false", "-c", "core.eol=lf"];
 const FIXED_ENV = {
@@ -84,4 +97,83 @@ export function makeFixtureRepo(files) {
     sha,
     dir,
   };
+}
+
+/**
+ * Builds a minimal valid plugins tree (all 8 packs by default, including an executable script in
+ * swift-ios-simulator listed in EXECUTABLES.txt) and packages it into baseDir via packageRelease.
+ */
+export function makeEightPackFixtureZip(
+  baseDir,
+  { packs = EIGHT_PACK_NAMES, zipName = "swift-agent-skills-antigravity.zip" } = {},
+) {
+  const pluginsRoot = makeTempDir("ag-eight-pack-src-");
+  const outPath = path.join(baseDir, zipName);
+  const executables = [];
+
+  try {
+    for (const packName of packs) {
+      const packDir = path.join(pluginsRoot, packName);
+      fs.mkdirSync(path.join(packDir, "assets"), { recursive: true });
+      fs.writeFileSync(
+        path.join(packDir, "assets", "logo.svg"),
+        '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128"></svg>\n',
+        "utf8",
+      );
+      fs.writeFileSync(path.join(packDir, "README.md"), `# ${packName}\n`, "utf8");
+      fs.writeFileSync(
+        path.join(packDir, "NOTICE.md"),
+        `# Third-Party Notices (${packName})\n`,
+        "utf8",
+      );
+      fs.writeFileSync(
+        path.join(packDir, "plugin.json"),
+        `${JSON.stringify(
+          {
+            $schema: ANTIGRAVITY_SCHEMA_URL,
+            name: packName,
+            displayName: `${packName} Tools`,
+            description: `Minimal valid fixture for ${packName}.`,
+            version: "1.0.0",
+            logo: "assets/logo.svg",
+            suggestedPrompts: ["Prompt one", "Prompt two", "Prompt three"],
+            author: { name: "Test Author", url: "https://example.com" },
+          },
+          null,
+          2,
+        )}\n`,
+        "utf8",
+      );
+
+      const skillName =
+        packName === "swift-ios-simulator" ? "ios-simulator-skill" : `${packName}-skill`;
+      const skillDir = path.join(packDir, "skills", skillName);
+      fs.mkdirSync(skillDir, { recursive: true });
+      fs.writeFileSync(
+        path.join(skillDir, "SKILL.md"),
+        `---\nname: ${skillName}\ndescription: Minimal valid skill for ${packName}.\n---\nBody for ${skillName}.\n`,
+        "utf8",
+      );
+
+      if (packName === "swift-ios-simulator") {
+        const scriptsDir = path.join(skillDir, "scripts");
+        fs.mkdirSync(scriptsDir, { recursive: true });
+        fs.writeFileSync(path.join(scriptsDir, "run.sh"), "#!/bin/sh\necho ok\n", "utf8");
+        executables.push("swift-ios-simulator/skills/ios-simulator-skill/scripts/run.sh");
+      }
+    }
+
+    if (executables.length > 0) {
+      fs.writeFileSync(
+        path.join(pluginsRoot, "EXECUTABLES.txt"),
+        `${executables.join("\n")}\n`,
+        "utf8",
+      );
+    }
+
+    packageRelease({ pluginsRoot, outPath });
+    return outPath;
+  } finally {
+    fs.rmSync(pluginsRoot, { recursive: true, force: true });
+  }
 }
