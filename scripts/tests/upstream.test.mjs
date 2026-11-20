@@ -81,6 +81,7 @@ describe("ensureCommit, listTree, readBlob", () => {
         ["scripts/run.sh", "100755"],
       ],
     );
+    assert.deepEqual(listTree(gitDir, fixture.sha, "./skill"), tree);
 
     const wholeTree = listTree(gitDir, fixture.sha, ".");
     assert.deepEqual(
@@ -94,6 +95,7 @@ describe("ensureCommit, listTree, readBlob", () => {
         "skill/scripts/run.sh",
       ],
     );
+    assert.deepEqual(listTree(gitDir, fixture.sha, "./"), wholeTree);
 
     const rawSkill = readBlob(gitDir, fixture.sha, "skill/SKILL.md");
     assert.ok(Buffer.isBuffer(rawSkill));

@@ -115,11 +115,18 @@ function parseLsTreeEntries(stdoutBuffer) {
   return entries;
 }
 
+function normalizeLeadingPath(value) {
+  return String(value ?? "")
+    .replace(/\\/g, "/")
+    .replace(/^\/+/, "")
+    .replace(/^(\.\/)+/, "");
+}
+
 /**
  * Lists blob and symlink entries under `subpath` (or whole tree for `.`) in `sha`, sorted by relative path.
  */
 export function listTree(gitDir, sha, subpath = ".") {
-  const cleanSub = String(subpath ?? ".").replace(/\\/g, "/").replace(/^\/+|\/+$/g, "");
+  const cleanSub = normalizeLeadingPath(subpath ?? ".").replace(/\/+$/, "");
   const isRoot = cleanSub === "" || cleanSub === ".";
 
   const args = ["--git-dir", gitDir, "ls-tree", "-r", "-z", sha];
@@ -152,10 +159,7 @@ export function listTree(gitDir, sha, subpath = ".") {
  * Reads the raw bytes of a blob at `<sha>:<fullPath>` without smudge or EOL conversion.
  */
 export function readBlob(gitDir, sha, fullPath) {
-  const cleanPath = String(fullPath)
-    .replace(/\\/g, "/")
-    .replace(/^\/+/, "")
-    .replace(/^(\.\/)+/, "");
+  const cleanPath = normalizeLeadingPath(fullPath);
   return runGit(["--git-dir", gitDir, "cat-file", "blob", `${sha}:${cleanPath}`]);
 }
 
@@ -163,10 +167,7 @@ export function readBlob(gitDir, sha, fullPath) {
  * Resolves a `<dir>/<prefix>*` glob to sorted child directories containing `SKILL.md`.
  */
 export function resolveGlob(gitDir, sha, pattern) {
-  const cleanPattern = String(pattern ?? "")
-    .replace(/\\/g, "/")
-    .replace(/^\/+/, "")
-    .replace(/^(\.\/)+/, "");
+  const cleanPattern = normalizeLeadingPath(pattern);
   if (!cleanPattern.endsWith("*") || cleanPattern.indexOf("*") !== cleanPattern.length - 1) {
     throw new Error(
       `Invalid glob pattern "${pattern}": expected <dir>/<prefix>* with a single trailing *`,
